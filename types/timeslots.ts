@@ -15,4 +15,4 @@ export type TimeslotType = {
   endTime: Date;
 };
 
-export type SelectedTimeslotType = Record<number, TimeslotType>;
+export type SelectedTimeslotType = Record<number, TimeslotType | undefined>;
