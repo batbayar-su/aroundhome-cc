@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders IndexPage 1`] = `
+<div>
+  <div>
+    Something went wrong
+  </div>
+</div>
+`;

@@ -1,11 +1,10 @@
 import useSWR from "swr";
 import { CompanyType, TimeslotDayType, TimeslotType } from "../types/timeslots";
-import { TimeslotsResponse, TimeslotsResponseCompany, TimeslotsResponseTimeslot } from "../types/timeslotsResponse";
-
-type HookResponse = {
-  data: TimeslotsResponse;
-  error: Error;
-};
+import {
+  TimeslotsResponse,
+  TimeslotsResponseCompany,
+  TimeslotsResponseTimeslot,
+} from "../types/timeslotsResponse";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -14,7 +13,10 @@ const groupTimeslots = (timeslots: TimeslotType[]): TimeslotDayType[] => {
 
   const hashedGroup = timeslots.reduce((hash, timeslot) => {
     const dateKey = timeslot.startTime.toDateString();
-    hash[dateKey] = hash[dateKey] || { dayOfWeek: timeslot.startTime.getDay(), timeslots: [] };
+    hash[dateKey] = hash[dateKey] || {
+      dayOfWeek: timeslot.startTime.getDay(),
+      timeslots: [],
+    };
     hash[dateKey].timeslots.push(timeslot);
     return hash;
   }, {} as Record<string, TimeslotDayType>);
@@ -22,13 +24,20 @@ const groupTimeslots = (timeslots: TimeslotType[]): TimeslotDayType[] => {
   return Object.values(hashedGroup);
 };
 
-const transformTimeslots = (timeslots: TimeslotsResponseTimeslot[]): TimeslotType[] => {
+const transformTimeslots = (
+  timeslots: TimeslotsResponseTimeslot[]
+): TimeslotType[] => {
   return timeslots.map((timeslot): TimeslotType => {
-    return { startTime: new Date(timeslot.start_time), endTime: new Date(timeslot.end_time) };
+    return {
+      startTime: new Date(timeslot.start_time),
+      endTime: new Date(timeslot.end_time),
+    };
   });
 };
 
-const transformCompany = (resCompany: TimeslotsResponseCompany): CompanyType => {
+const transformCompany = (
+  resCompany: TimeslotsResponseCompany
+): CompanyType => {
   const { id, name, type } = resCompany;
   const linierTimeslots = transformTimeslots(resCompany.time_slots);
   const groupedTimeslots = groupTimeslots(linierTimeslots);
@@ -36,7 +45,7 @@ const transformCompany = (resCompany: TimeslotsResponseCompany): CompanyType => 
 };
 
 export function useTimeslots() {
-  const { data, error } = useSWR("/api/timeslots", fetcher) as HookResponse;
+  const { data, error } = useSWR<TimeslotsResponse, Error>("/api/timeslots", fetcher);
 
   const companies = data?.map((company) => transformCompany(company));
   console.log(companies);
